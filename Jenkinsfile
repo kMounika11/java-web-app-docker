@@ -1,7 +1,7 @@
 node{
      
     stage('SCM Checkout'){
-        checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'Github-cred', url: 'https://github.com/kMounika11/java-web-app-docker.git']])
+        git url: 'https://github.com/kMounika11/java-web-app-docker.git',branch: 'master'
     }
     
     stage(" Maven Clean Package"){
