@@ -1,11 +1,12 @@
 node{
      
     stage('SCM Checkout'){
-        git url: 'https://github.com/MithunTechnologiesDevOps/java-web-app-docker.git',branch: 'master'
+        checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'Github-cred', url: 'https://github.com/kMounika11/java-web-app-docker.git']])
     }
     
     stage(" Maven Clean Package"){
-      def mavenHome =  tool name: "Maven-3.5.6", type: "maven"
+        stage(" Maven Clean Package"){
+      def mavenHome =  tool name: "Maven-3.6.3", type: "maven"
       def mavenCMD = "${mavenHome}/bin/mvn"
       sh "${mavenCMD} clean package"
       
@@ -13,19 +14,19 @@ node{
     
     
     stage('Build Docker Image'){
-        sh 'docker build -t dockerhandson/java-web-app .'
+        sh 'docker build -t kmounika/java-web-app .'
     }
     
     stage('Push Docker Image'){
-        withCredentials([string(credentialsId: 'Docker_Hub_Pwd', variable: 'Docker_Hub_Pwd')]) {
-          sh "docker login -u dockerhandson -p ${Docker_Hub_Pwd}"
+        withCredentials([string(credentialsId: 'docker-hub', variable: 'docker-hub')]) {
+          sh "docker login -u kmounika11 -p ${docker-hub}"
         }
-        sh 'docker push dockerhandson/java-web-app'
+        sh 'docker push kmounika11/java-web-app'
      }
      
       stage('Run Docker Image In Dev Server'){
         
-        def dockerRun = ' docker run  -d -p 8080:8080 --name java-web-app dockerhandson/java-web-app'
+        def dockerRun = ' docker run  -d -p 8083:8090 --name java-web-app kmounika11/java-web-app'
          
          sshagent(['DOCKER_SERVER']) {
           sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.20.72 docker stop java-web-app || true'
